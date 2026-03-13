@@ -2,7 +2,7 @@
 
 > **DownNotice Mobile** — native Android app that monitors cloud provider status pages (RSS / Atom) and delivers real-time outage and degradation notifications.
 
-This is the Android companion to [DownNotice Desktop](https://github.com/Yoshiofthewire/DownNotice) (Electron + React).
+This is the Android companion to [DownNotice Desktop](DownNoticeDesktop/README.md) (Electron + React).
 
 ## Features
 
