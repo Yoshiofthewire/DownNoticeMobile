@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Azure logo - simplified -->
+    <path
+        android:fillColor="#0078D4"
+        android:pathData="M24,6L13,42h7l2,-7h12l2,7h7L24,6zM24,16l4,14h-8l4,-14z"/>
+</vector>

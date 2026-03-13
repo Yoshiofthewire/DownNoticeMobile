@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Cloudflare logo - simplified -->
+    <path
+        android:fillColor="#F6821F"
+        android:pathData="M33.5,32H12l-1,-3L32,29l2.5,-8l5,3l-2,8z"/>
+    <path
+        android:fillColor="#FBAD41"
+        android:pathData="M17,29l2,-10h12l1,3L18,22l-2,7z"/>
+    <path
+        android:fillColor="#F6821F"
+        android:pathData="M36,16c-2,-4 -6,-4 -6,-4l-14,13h22l2,-5z"/>
+</vector>

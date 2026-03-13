@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Generic cloud icon -->
+    <path
+        android:fillColor="#78909C"
+        android:pathData="M38.5,28.5c0,-0.17 -0.01,-0.34 -0.02,-0.5C38.83,27.17 39,26.11 39,25c0,-4.97 -4.03,-9 -9,-9 -0.72,0 -1.42,0.09 -2.09,0.25C25.98,12.83 22.26,10 18,10c-5.52,0 -10,4.48 -10,10 0,0.34 0.02,0.68 0.06,1.01C5.68,22.08 4,24.35 4,27c0,3.31 2.69,6 6,6h28c2.76,0 5,-2.24 5,-5 0,-0.17 -0.01,-0.33 -0.03,-0.5z"/>
+</vector>

@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- GCP logo - simplified hexagonal -->
+    <path
+        android:fillColor="#4285F4"
+        android:pathData="M24,8L10,24l14,16l14,-16L24,8z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,16l-6,8l6,8l6,-8z"/>
+    <path
+        android:fillColor="#EA4335"
+        android:pathData="M24,8l-14,16h8l6,-8l6,8h8z"
+        android:fillAlpha="0.4"/>
+</vector>
