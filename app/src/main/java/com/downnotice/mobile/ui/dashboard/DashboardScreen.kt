@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Refresh
@@ -31,9 +33,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +47,7 @@ import com.downnotice.mobile.ui.components.ProviderIcon
 import com.downnotice.mobile.ui.components.StatusBadge
 import com.downnotice.mobile.ui.components.StatusDot
 import com.downnotice.mobile.ui.components.formatTime
+import kotlinx.coroutines.launch
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,8 +59,9 @@ fun DashboardScreen(
     val feeds by viewModel.feeds.collectAsState()
     val overallStatus by viewModel.overallStatus.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf("Feeds", "Notices")
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
+    val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -84,11 +86,15 @@ fun DashboardScreen(
             }
         )
 
-        TabRow(selectedTabIndex = selectedTab) {
+        TabRow(selectedTabIndex = pagerState.currentPage) {
             tabs.forEachIndexed { index, title ->
                 Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    },
                     text = { Text(title) }
                 )
             }
@@ -96,9 +102,14 @@ fun DashboardScreen(
 
         val feedList = feeds.values.toList()
 
-        when (selectedTab) {
-            0 -> FeedsTab(feedList = feedList, isLoading = isLoading, onFeedClick = onFeedClick)
-            1 -> NoticesTab(feedList = feedList, isLoading = isLoading, onFeedClick = onFeedClick)
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+            when (page) {
+                0 -> FeedsTab(feedList = feedList, isLoading = isLoading, onFeedClick = onFeedClick)
+                1 -> NoticesTab(feedList = feedList, isLoading = isLoading, onFeedClick = onFeedClick)
+            }
         }
     }
 }

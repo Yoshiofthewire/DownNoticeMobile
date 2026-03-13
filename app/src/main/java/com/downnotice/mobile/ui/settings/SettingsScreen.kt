@@ -12,9 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -40,9 +41,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,12 +54,15 @@ import com.downnotice.mobile.MainViewModel
 import com.downnotice.mobile.data.model.FeedConfig
 import com.downnotice.mobile.ui.components.AVAILABLE_ICONS
 import com.downnotice.mobile.ui.components.ProviderIcon
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(viewModel: MainViewModel) {
     val settings by viewModel.settings.collectAsState()
-    var selectedTab by remember { mutableIntStateOf(0) }
+    val tabs = listOf("RSS Feeds", "General")
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })
+    val scope = rememberCoroutineScope()
     var showAddDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -66,7 +70,7 @@ fun SettingsScreen(viewModel: MainViewModel) {
             TopAppBar(title = { Text("Settings") })
         },
         floatingActionButton = {
-            if (selectedTab == 0) {
+            if (pagerState.currentPage == 0) {
                 FloatingActionButton(onClick = { showAddDialog = true }) {
                     Icon(Icons.Default.Add, contentDescription = "Add Feed")
                 }
@@ -78,47 +82,53 @@ fun SettingsScreen(viewModel: MainViewModel) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TabRow(selectedTabIndex = selectedTab) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    text = { Text("RSS Feeds") }
-                )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    text = { Text("General") }
-                )
+            TabRow(selectedTabIndex = pagerState.currentPage) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        },
+                        text = { Text(title) }
+                    )
+                }
             }
 
-            when (selectedTab) {
-                0 -> FeedsTab(
-                    feeds = settings.feeds,
-                    onToggle = { feedId ->
-                        val updated = settings.copy(
-                            feeds = settings.feeds.map {
-                                if (it.id == feedId) it.copy(enabled = !it.enabled) else it
-                            }
-                        )
-                        viewModel.updateSettings(updated)
-                    },
-                    onRemove = { feedId ->
-                        val updated = settings.copy(
-                            feeds = settings.feeds.filter { it.id != feedId }
-                        )
-                        viewModel.updateSettings(updated)
-                    }
-                )
-                1 -> GeneralTab(
-                    refreshInterval = settings.refreshInterval,
-                    theme = settings.theme,
-                    historyHours = settings.historyHours,
-                    notifications = settings.notifications,
-                    onUpdateRefresh = { viewModel.updateSettings(settings.copy(refreshInterval = it)) },
-                    onUpdateTheme = { viewModel.updateSettings(settings.copy(theme = it)) },
-                    onUpdateHistory = { viewModel.updateSettings(settings.copy(historyHours = it)) },
-                    onUpdateNotifications = { viewModel.updateSettings(settings.copy(notifications = it)) }
-                )
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                when (page) {
+                    0 -> FeedsTab(
+                        feeds = settings.feeds,
+                        onToggle = { feedId ->
+                            val updated = settings.copy(
+                                feeds = settings.feeds.map {
+                                    if (it.id == feedId) it.copy(enabled = !it.enabled) else it
+                                }
+                            )
+                            viewModel.updateSettings(updated)
+                        },
+                        onRemove = { feedId ->
+                            val updated = settings.copy(
+                                feeds = settings.feeds.filter { it.id != feedId }
+                            )
+                            viewModel.updateSettings(updated)
+                        }
+                    )
+                    1 -> GeneralTab(
+                        refreshInterval = settings.refreshInterval,
+                        theme = settings.theme,
+                        historyHours = settings.historyHours,
+                        notifications = settings.notifications,
+                        onUpdateRefresh = { viewModel.updateSettings(settings.copy(refreshInterval = it)) },
+                        onUpdateTheme = { viewModel.updateSettings(settings.copy(theme = it)) },
+                        onUpdateHistory = { viewModel.updateSettings(settings.copy(historyHours = it)) },
+                        onUpdateNotifications = { viewModel.updateSettings(settings.copy(notifications = it)) }
+                    )
+                }
             }
         }
     }
